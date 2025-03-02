@@ -93,7 +93,7 @@ pub fn task_log(to_do_list_text: Vec<Vec<String>>) -> Vec<RegisterTask> {
                     "description" => task.description = word_separated_by_colon[1].clone(),
                     "status" => task.status_progress = word_separated_by_colon[1].clone(),
                     "createdAt" => task.created_at = word_separated_by_colon[1].clone(),
-                    "updatedAt" => task.updated_at = word_separated_by_colon[1].clone(),
+                    "updatedAt" => task.updated_at = Some(word_separated_by_colon[1].clone()),
                     _ => {
                         println!("Error converting data to structure")
                     }

@@ -12,5 +12,5 @@ pub struct RegisterTask {
     pub description: String,
     pub status_progress: String,
     pub created_at: String,
-    pub updated_at: String,
+    pub updated_at: Option<String>,
 }
