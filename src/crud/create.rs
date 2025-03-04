@@ -1,139 +1,157 @@
+use rand::Rng;
 use crate::interface::task_inteface::{RegisterTask, StatusTask};
-use std::io::stdin;
-use regex::Regex;
-
-pub fn task_entry(id: i64) -> RegisterTask {
-    let mut description: String = String::new();
-    let mut option_status_progress: String = String::new(); 
-    let mut status_progress: StatusTask = StatusTask::default();
-    let mut date: String = String::new();
-    let mut condition: u8 = 0;
-    let mut day: u8 = 0;
-    let mut month: u8 = 0;
-    let mut age: u16 = 0;
-    let mut input_day: String = String::new();
-    let mut input_month: String = String::new();
-    let mut input_age: String = String::new();
+use std::io::{stdin,Error};
+use std::num::ParseIntError;
 
 
-    println!("Ingrese la descripcion de la tarea");
+pub fn task_entry(id: u64) -> RegisterTask {
     
-    while condition == 0 {
-        let input_description = stdin().read_line(&mut description);
-        match input_description {
-            Ok(_) =>  {
-                condition = 1
-            },
-            Err(_) => {
-                println!("Problemas al ingresar la descripcion, intente de nuevo...")
-            }
-        }
-    }
-
-    println!("\n 
-    Ingrese el estatus de la tarea segun el menu \n
-    1. No ah inciado \n
-    2. En progreso \n");
-
-    while condition == 1 {
-        let input_status_progress= stdin()
-            .read_line(&mut option_status_progress);
-
-        match input_status_progress {
-            Ok(_) => {
-                let status_progress_int: u8 = option_status_progress.trim().parse().expect("No esta ingresando un digito valido intentelo de nuevo..");
-            
-                match status_progress_int {
-                    1 => {
-                        status_progress = StatusTask::NotStarter;
-                        condition = 2;
-                    },
-                    2 => {
-                        status_progress = StatusTask::InProgress;
-                        condition = 2;
-                    },
-                    _ => {
-                        println!("Ingrese un digito segun el menu, intentelo de nuevo::")
-                    }
-                }
-            
-            },
-            Err(_) => {
-                println!("Error al ingresar estatus intentelo de nuevo")
-            }
-        }
-
-    }
-    
-
-    println!("Ingrese fecha de creacion:");
-    println!("Dia 1-31");
-
-    while condition == 2 {
-        let int_day = stdin().read_line(&mut input_day);
-
-        match int_day {
-            Ok(_) => {
-                day = input_day.trim().parse().expect("Error: Dato que ingreso no es un digito");
-            },
-            Err(_) => {
-                println!("No esta ingresando un digito valido intentelo de nuevo")
-            }
-        }
-       
-
-        if day < 1 || day > 31 {
-            println!("Ingrese valores entre el 1 y 31")
-        } else {
-            condition = 3
-        }      
-    }
-
-    println!("Mes 1-12");
-
-    while condition == 3 {
-        stdin().read_line(&mut input_month).expect("Error al ingresar mes intentelo de nuevo");
-        month = input_month.trim().parse().expect("Dato que ingreso no es un digito intentelo de nuevo");
-
-        if month < 1 || month > 31 {
-            println!("Ingrese valores entre el 1 y 12")
-        } else {
-            condition = 4
-        }
-    }
-
-    println!("Año 1900-2025");
-
-    while condition == 4 {
-        stdin().read_line(&mut input_age).expect("Error al ingresar dia intentelo de nuevo");
-        age = input_age.trim().parse().expect("Dato que ingreso no es un digito intentelo de nuevo");
-
-        if age < 1990 || age > 2024 {
-            println!("Ingrese valores entre el 1 y 31")
-        } else {
-            condition = 5
-        }
-        
-    }
-
-    date = format!("{}-{}-{}",age,month,day);
-
+    let date: String = task_creation_date_entry(); 
+    let description: String = task_description_entry();
+    let status_progress: StatusTask = task_status_entry();
 
     let task: RegisterTask = RegisterTask {
         id: id,
-        description: description.trim().to_owned().clone(),
+        description: description.trim().to_owned(),
         status_progress: format!("{:?}",status_progress),
         created_at: date,
         updated_at: None 
     };
 
-
     task
+}
 
+
+pub fn create_task(task_list: Vec<RegisterTask> ) -> Vec<RegisterTask> {
+    let mut new_list_task: Vec<RegisterTask> = task_list;
+    let mut condition: bool = false;
+    let mut random = rand::rng();
+    let mut random_number: u64 = random.random_range(1..10000);
+
+
+    if !new_list_task.len() <= 0 {
+        while !condition {
+            for value in &new_list_task {
+                if value.id == random_number {
+                    random_number = random.random_range(1..10000);
+                } else {
+                    condition = true
+                }
+            }
+        }
+    } 
+    
+
+    let task: RegisterTask = task_entry(random_number);
+
+    new_list_task.push(task);
+
+    new_list_task
+
+}
+
+
+fn task_description_entry() -> String {
+
+    println!("Ingrese la descripcion de la tarea");
+    
+    let description: String = validate_terminal_line_entry();
+    
+    description
+}
+
+fn task_status_entry() -> StatusTask {
+
+    let mut condition: bool = false;
+    let mut status_progress: StatusTask = StatusTask::default(); 
+
+    println!("\n 
+    Ingrese el estado de la tarea segun la lista \n
+    1. No ah inciado \n
+    2. En progreso \n");
+
+    while !condition {
+        
+        let status_progress_int: Result<u8,ParseIntError> = validate_terminal_line_entry().trim().parse::<u8>();
+                
+            match status_progress_int {
+                Ok(1) => {
+                    status_progress = StatusTask::NotStarter;
+                    condition = true;
+                },
+                Ok(2) => {
+                    status_progress = StatusTask::InProgress;
+                    condition = true;
+                },
+                Err(_) => {
+                    println!("Error: Ingrese un digito valido")
+                },
+                _ => {
+                    println!("Ingrese un digito segun el menu")
+                },
+            }
+            
+    }   
+    status_progress             
+}
+
+    
+    
+fn task_creation_date_entry() -> String {
+
+    println!("Ingrese fecha de creacion:");
+    let day: u16 = convert_date_format(1, 31, "day");
+    let month: u16 = convert_date_format(1, 12, "month");
+    let age: u16 = convert_date_format(1990, 2025, "age");
+
+    let date: String = format!("{}-{}-{}",age,month,day);
+
+    date
+}
+
+pub fn validate_terminal_line_entry() -> String {
+    let mut terminal_line_value: String = String::new();
+    let mut condition: bool = false;
+    let validate: Result<usize,Error> = stdin().read_line(&mut terminal_line_value);
+
+    while !condition {
+        match  validate {
+            Ok(_) => {
+                condition = true;
+            },
+            Err(_) => {
+                println!("Error de ingreso de dato en la terminal")
+            }
+        }
     }
+    terminal_line_value
+}
 
+fn convert_date_format(min: u16, max: u16,message: &str) -> u16 {
 
+    let mut condition: bool = false;
+    let mut date_number: u16 = 0;
 
-pub fn create_register_task(register: Vec<RegisterTask>) {
+    println!("{} {}-{}",message,min,max);
 
-} 
+    while !condition {
+        let convert_data_int: Result<u16,ParseIntError> = validate_terminal_line_entry()
+        .trim()
+        .parse::<u16>();
+
+        match convert_data_int {
+            Ok(_value) => {
+                if _value < min || _value > max {
+                    println!("Ingrese valores entre el {} y {}",min,max)
+                } else {
+                    date_number = _value;
+                    condition = true;
+                }
+            },
+            Err(_err) => {
+                println!("Error: Dato que ingreso no es un digito. \n {}",_err)
+            }
+        }
+    }
+    date_number
+}

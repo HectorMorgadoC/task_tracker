@@ -1,15 +1,13 @@
-use std::{fs::File, io::Read};
+use std::{fs,fs::File};
 use crate::interface::task_inteface::RegisterTask;
 use std::path::Path;
 
 
-pub  fn read_file(path: &Path) -> (String,bool) {
-    let data_task = File::open(path);
-    let mut task_list: String = String::new();
+pub fn read_file(path: &Path) -> (String,bool) {
+    let data_task = fs::read_to_string(path);
     match data_task {
-        Ok(mut value) => {
-            value.read_to_string(&mut task_list).expect("Error loading file");
-            (task_list,true)
+        Ok(value) => {
+            (value,true)
         }
         Err(error) => 
         (error.to_string(),false)
@@ -21,7 +19,7 @@ pub fn read_file_with_status(content: String, success: bool ) -> String {
     if success {
         content
     } else {
-        File::create("src/datas.json").expect("Error create file");
+        File::create("data.json").expect("Error create file");
         format!("")
     }
 }
@@ -48,28 +46,27 @@ pub fn convert_to_do_lists(file_reading: String) -> Vec<Vec<String>> {
             .iter()
             .map(|e| e.replace("\n", ""))
             .collect();
-
         let remove_space: Vec<String> = remove_line_break
             .iter()
-            .map(|e| e.replace(" ", ""))
+            .map(|e| e.replace("  ", ""))
             .collect();
 
+        
         let comma_for_two_dashes: Vec<String> =
             remove_space.iter().map(|e| e.replace(",", "--")).collect();
 
         for value in comma_for_two_dashes {
             let word_value_processed = value.clone();
-
             let data_by_double_hyphen: Vec<String> = word_value_processed
                 .trim()
                 .split("--")
                 .map(|e| e.to_owned())
                 .collect();
-
+            
             list_of_processed_words.push(data_by_double_hyphen);
         }
-
         list_of_processed_words
+        
     } else {
         list_of_processed_words
     }
@@ -87,13 +84,19 @@ pub fn task_log(to_do_list_text: Vec<Vec<String>>) -> Vec<RegisterTask> {
                     .split(":")
                     .map(|e| e.to_owned().replace("\"", ""))
                     .collect();
-    
                 match word_separated_by_colon[0].as_str() {
-                    "id" => task.id = word_separated_by_colon[1].parse().unwrap(),
-                    "description" => task.description = word_separated_by_colon[1].clone(),
-                    "status" => task.status_progress = word_separated_by_colon[1].clone(),
-                    "createdAt" => task.created_at = word_separated_by_colon[1].clone(),
-                    "updatedAt" => task.updated_at = Some(word_separated_by_colon[1].clone()),
+                    "id" => task.id = word_separated_by_colon[1].trim().parse().unwrap(),
+                    "description" => task.description = word_separated_by_colon[1].trim().to_owned().clone(),
+                    "status" => task.status_progress = word_separated_by_colon[1].trim().to_owned().clone(),
+                    "createdAt" => task.created_at = word_separated_by_colon[1].trim().to_owned().clone(),
+                    "updatedAt" => {
+
+                        if word_separated_by_colon[1].trim() == "None" {
+                            task.updated_at = None
+                        } else {
+                            task.updated_at = Some(word_separated_by_colon[1].clone())
+                        }
+                    },
                     _ => {
                         println!("Error converting data to structure")
                     }
@@ -107,4 +110,68 @@ pub fn task_log(to_do_list_text: Vec<Vec<String>>) -> Vec<RegisterTask> {
         task_list
     }
 }
+
+
+pub fn task_list_format(task_list: Vec<RegisterTask>) -> String {
+
+    let mut format_json: String = String::new(); 
+
+    for (index,value) in task_list.iter().enumerate() {
+        let mut format_list_json: String = String::new();
+
+        if index == task_list.len()-1 {
+            format_list_json.push_str(&format!("
+                {{
+                \"id\": {},
+                \"description\": \"{}\",
+                \"status\": \"{}\",
+                \"createdAt\": \"{}\",
+                \"updatedAt\": \"{:?}\"
+                }}
+                ",value.id
+                ,value.description
+                ,value.status_progress
+                ,value.created_at
+                ,value.updated_at));
+
+        } else {
+            format_list_json.push_str(&format!("
+                {{
+                \"id\": {},
+                \"description\": \"{}\",
+                \"status\": \"{}\",
+                \"createdAt\": \"{}\",
+                \"updatedAt\": \"{:?}\"
+                }},
+                ",value.id
+                ,value.description
+                ,value.status_progress
+                ,value.created_at
+                ,value.updated_at));
+        }
+
+        format_json.push_str(&format_list_json)
+    }
+
+    format!("[\n{}\n]",format_json)
+}
+
+
+pub fn write_file(path: &str,task_list: Vec<RegisterTask>) {
+    
+    let content: String = format!("{}",task_list_format(task_list));
+
+    let archivo = fs::write(path,&content);
+    
+    match archivo {
+        Ok(_) => {
+            println!("Datos guardados")
+        },
+        Err(_) => {
+            println!("Error al guardar data")
+        }
+    }
+    
+}
+
 

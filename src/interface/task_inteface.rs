@@ -8,7 +8,7 @@ pub enum StatusTask {
 
 #[derive(Default, Debug, Clone)]
 pub struct RegisterTask {
-    pub id: i64,
+    pub id: u64,
     pub description: String,
     pub status_progress: String,
     pub created_at: String,
