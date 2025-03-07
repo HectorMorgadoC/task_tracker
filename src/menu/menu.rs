@@ -1,36 +1,56 @@
-use std::num::ParseIntError;
-use crate::{crud::{create::create_task, delete::delete_task, get::task_list, update::update_task_record}, data::{data_management::data_management, file_management::write_file}};
-use crate::common::common::validate_terminal_line_entry;
+use crate::{
+    common::common::{question_yes_or_not, terminal_line_value_int8},
+    crud::{
+        create::create_task,
+        delete::delete_task,
+        get::{get_task_by_options, task_list},
+        update::update_task_record,
+    },
+    data::{data_management::data_management, file_management::write_file},
+};
 
-pub fn option_menu(digite: u8, ) {
+pub fn option_menu(path: &str) {
+    let mut condition: bool = false;
 
-    let data = data_management("data.json");
-    let digite_option: u8 = digite;
-    match digite_option {
-        1 => {
-            task_list(data);
-        },
-        2 => {
-            write_file("data.json"
-            ,create_task(data));
-        },
-        3 => {
-            write_file("data.json"
-            , update_task_record(data));
-        },
-        4 => {
-            write_file("data.json"
-            , delete_task(data));
+    while !condition {
+        let data = data_management(path);
+        let digite_option: u8 = main_menu();
+        match digite_option {
+            1 => {
+                task_list(data);
+            }
+            2 => {
+                write_file(path, create_task(data));
+            }
+            3 => {
+                write_file(path, update_task_record(data));
+            }
+            4 => {
+                write_file(path, delete_task(data));
+            }
+            5 => {
+                get_task_by_options(data, "Culminado".to_owned());
+            }
+            6 => {
+                get_task_by_options(data, "EnProgreso".to_owned());
+            }
+            7 => {
+                get_task_by_options(data, "SinIniciar".to_owned());
+            }
+            _ => {
+                println!("El digito no es una opcion:")
+            }
         }
-        _ => {
 
+        if !question_yes_or_not("Desea continuar?") {
+            condition = true
         }
     }
 }
 
 pub fn main_menu() -> u8 {
-    
-    println!("\n
+    println!(
+        "\n
     TASK LOGS \n
     1. listar todas las tareas \n
     2. Agregar una tarea \n
@@ -39,25 +59,10 @@ pub fn main_menu() -> u8 {
     5. Ver las tareas culminadas \n
     6. Ver las tareas pendientes \n
     7. Ver las tareas en curso \n
-    ");
+    "
+    );
 
-    let menu: String = validate_terminal_line_entry();
-    let mut condition: bool = false;
-    let mut menu_index: u8 = 0;
+    let menu_index: u8 = terminal_line_value_int8();
 
-    while !condition {
-
-        let value_output: Result<u8,ParseIntError> = menu.trim().parse();
-
-        match value_output {
-            Ok(value) => {
-                menu_index = value;
-                condition = true
-            },
-            Err(_) => {
-                println!("Dato ingresado no es un digito:-- ");
-            }
-        }
-    }
     menu_index
 }

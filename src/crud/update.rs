@@ -1,9 +1,12 @@
+use crate::common::common::{
+    question_yes_or_not, search_task_by_id, show_assignment, task_creation_date_entry,
+    terminal_line_value_int8, validate_terminal_line_entry,
+};
 use crate::interface::task_inteface::{RegisterTask, StatusTask};
-use crate::common::common::{terminal_line_value_int8, question_yes_or_not, search_task_by_id, show_assignment, task_creation_date_entry, validate_terminal_line_entry};
 
-pub fn update_task_record(task_list:Vec<RegisterTask>) -> Vec<RegisterTask> {
+pub fn update_task_record(task_list: Vec<RegisterTask>) -> Vec<RegisterTask> {
     println!("Inserte la id de la tarea");
-    
+
     let mut task: RegisterTask = search_task_by_id(&task_list);
 
     show_assignment(&task);
@@ -15,11 +18,13 @@ pub fn update_task_record(task_list:Vec<RegisterTask>) -> Vec<RegisterTask> {
     }
 
     if question_yes_or_not("Desea modificar el estado de la tarea?") {
-        println!("\n 
+        println!(
+            "\n 
         Ingrese el estado de la tarea segun la lista \n
         1. No ah inciado \n
         2. En progreso \n
-        3. Terminado");
+        3. Terminado"
+        );
 
         let mut status_progress: StatusTask = StatusTask::default();
         let mut condition: bool = false;
@@ -31,22 +36,22 @@ pub fn update_task_record(task_list:Vec<RegisterTask>) -> Vec<RegisterTask> {
                 1 => {
                     status_progress = StatusTask::SinIniciar;
                     condition = true;
-                },
+                }
                 2 => {
                     status_progress = StatusTask::EnProgreso;
                     condition = true;
-                },
+                }
                 3 => {
                     status_progress = StatusTask::Culminado;
                     condition = true;
-                },
+                }
                 _ => {
                     println!("Error digito incorrecto: Ingrese un digito con el menu correcto")
                 }
             }
         }
 
-        task.status_progress = format!("{:?}",status_progress);
+        task.status_progress = format!("{:?}", status_progress);
     }
 
     if question_yes_or_not("Desea modificar la fecha de creacion") {
@@ -58,13 +63,10 @@ pub fn update_task_record(task_list:Vec<RegisterTask>) -> Vec<RegisterTask> {
     let date_update: String = task_creation_date_entry("Ingrese fecha de modificacion");
     task.updated_at = Some(date_update);
 
-
-    update_task(&task,&task_list)
-
+    update_task(&task, &task_list)
 }
 
-fn update_task(task: &RegisterTask,task_list: &Vec<RegisterTask>) -> Vec<RegisterTask> {
-
+fn update_task(task: &RegisterTask, task_list: &Vec<RegisterTask>) -> Vec<RegisterTask> {
     let mut new_task_list: Vec<RegisterTask> = Vec::new();
 
     for value in task_list {
@@ -73,8 +75,7 @@ fn update_task(task: &RegisterTask,task_list: &Vec<RegisterTask>) -> Vec<Registe
         } else {
             new_task_list.push(value.clone())
         }
-        
     }
 
     new_task_list.clone()
-} 
+}

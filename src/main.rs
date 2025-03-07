@@ -1,17 +1,12 @@
-mod interface;
-mod data;
-mod menu;
-mod crud;
 mod common;
+mod crud;
+mod data;
+mod interface;
+mod menu;
 
-use crate::menu::menu::{main_menu,option_menu};
+use crate::menu::menu::option_menu;
 
 fn main() {
-
-    option_menu(main_menu());
-
-
+    let path: &str = "data.json";
+    option_menu(path);
 }
-
-
-
