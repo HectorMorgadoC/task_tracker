@@ -116,8 +116,18 @@ pub fn task_list_format(task_list: Vec<RegisterTask>) -> String {
 
     let mut format_json: String = String::new(); 
 
-    for (index,value) in task_list.iter().enumerate() {
+    for (index,task) in task_list.iter().enumerate() {
         let mut format_list_json: String = String::new();
+        let mut updated_at: String = String::new();
+        
+        match &task.updated_at {
+            Some(value) => {
+                updated_at.push_str(value)
+            },
+            None => {
+                updated_at.push_str("None")
+            }
+        }
 
         if index == task_list.len()-1 {
             format_list_json.push_str(&format!("
@@ -126,13 +136,13 @@ pub fn task_list_format(task_list: Vec<RegisterTask>) -> String {
                 \"description\": \"{}\",
                 \"status\": \"{}\",
                 \"createdAt\": \"{}\",
-                \"updatedAt\": \"{:?}\"
+                \"updatedAt\": \"{}\"
                 }}
-                ",value.id
-                ,value.description
-                ,value.status_progress
-                ,value.created_at
-                ,value.updated_at));
+                ",task.id
+                ,task.description
+                ,task.status_progress
+                ,task.created_at
+                ,updated_at));
 
         } else {
             format_list_json.push_str(&format!("
@@ -141,13 +151,13 @@ pub fn task_list_format(task_list: Vec<RegisterTask>) -> String {
                 \"description\": \"{}\",
                 \"status\": \"{}\",
                 \"createdAt\": \"{}\",
-                \"updatedAt\": \"{:?}\"
+                \"updatedAt\": \"{}\"
                 }},
-                ",value.id
-                ,value.description
-                ,value.status_progress
-                ,value.created_at
-                ,value.updated_at));
+                ",task.id
+                ,task.description
+                ,task.status_progress
+                ,task.created_at
+                ,updated_at));
         }
 
         format_json.push_str(&format_list_json)

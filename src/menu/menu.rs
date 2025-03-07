@@ -1,18 +1,22 @@
 use std::num::ParseIntError;
-use crate::{crud::{create::{create_task,validate_terminal_line_entry},get::task_list}, data::{data_management::data_management, file_management::write_file}};
+use crate::{crud::{create::create_task,get::task_list, update::update_task_record}, data::{data_management::data_management, file_management::write_file}};
+use crate::common::common::validate_terminal_line_entry;
 
 pub fn option_menu(digite: u8, ) {
 
+    let data = data_management("data.json");
     let digite_option: u8 = digite;
     match digite_option {
         1 => {
-            task_list(data_management("data.json"));
+            task_list(data);
         },
         2 => {
-            write_file("data.json",create_task(data_management("data.json")));
+            write_file("data.json"
+            ,create_task(data));
         },
         3 => {
-            println!("No existe menu para ello")
+            write_file("data.json"
+            , update_task_record(data));
         }
         _ => {
 
