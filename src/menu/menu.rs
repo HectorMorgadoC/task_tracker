@@ -1,5 +1,5 @@
 use std::num::ParseIntError;
-use crate::{crud::{create::create_task,get::task_list, update::update_task_record}, data::{data_management::data_management, file_management::write_file}};
+use crate::{crud::{create::create_task, delete::delete_task, get::task_list, update::update_task_record}, data::{data_management::data_management, file_management::write_file}};
 use crate::common::common::validate_terminal_line_entry;
 
 pub fn option_menu(digite: u8, ) {
@@ -17,6 +17,10 @@ pub fn option_menu(digite: u8, ) {
         3 => {
             write_file("data.json"
             , update_task_record(data));
+        },
+        4 => {
+            write_file("data.json"
+            , delete_task(data));
         }
         _ => {
 

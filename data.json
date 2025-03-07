@@ -1,27 +1,11 @@
 [
 
                 {
-                "id": 6721,
-                "description": "Agregar todo las lista de usuarios",
-                "status": "NotStarter",
-                "createdAt": "2004-3-2",
-                "updatedAt": "None"
-                },
-                
-                {
-                "id": 1487,
-                "description": "Esta es una segunda prueba de tarea",
-                "status": "Done",
-                "createdAt": "2025-3-6",
-                "updatedAt": "2002-12-12"
-                },
-                
-                {
-                "id": 4232,
-                "description": "Esta es la tercera prueba realizada para este programa",
-                "status": "Done",
-                "createdAt": "2021-2-12",
-                "updatedAt": " 2022-12-12"
+                "id": 1374,
+                "description": "Esta es otra prueba",
+                "status": "SinIniciar",
+                "createdAt": "2002-12-12",
+                "updatedAt": ""
                 }
                 
 ]

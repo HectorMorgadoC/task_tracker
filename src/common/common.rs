@@ -127,6 +127,28 @@ pub fn search_task_by_id(task_list: &Vec<RegisterTask>) -> RegisterTask {
     task
 }
 
+pub fn delete_task_by_id(task_list: &Vec<RegisterTask>) -> Vec<RegisterTask> {
+    let mut condition: bool = false;
+    let mut new_task_list: Vec<RegisterTask> = task_list.clone();
+
+    while !condition {
+        let id: u64 = terminal_line_value_int64();
+
+        for (index,value) in task_list.iter().enumerate() {
+            if value.id == id && question_yes_or_not("Desea eliminar el registro de la tarea?"){
+                new_task_list.remove(index);
+                condition = true;
+            } 
+        }
+
+        if !condition {
+            println!("Id no existe: Ingrese id correcto")
+        }
+    }
+
+    new_task_list
+}
+
 pub fn show_assignment(task: &RegisterTask) {
     println!("------------------------------");
     println!("Id: {}",task.id);

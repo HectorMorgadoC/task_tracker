@@ -29,15 +29,15 @@ pub fn update_task_record(task_list:Vec<RegisterTask>) -> Vec<RegisterTask> {
         while !condition {
             match number_status_progress {
                 1 => {
-                    status_progress = StatusTask::NotStarter;
+                    status_progress = StatusTask::SinIniciar;
                     condition = true;
                 },
                 2 => {
-                    status_progress = StatusTask::InProgress;
+                    status_progress = StatusTask::EnProgreso;
                     condition = true;
                 },
                 3 => {
-                    status_progress = StatusTask::Done;
+                    status_progress = StatusTask::Culminado;
                     condition = true;
                 },
                 _ => {

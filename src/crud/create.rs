@@ -76,11 +76,11 @@ fn task_status_entry() -> StatusTask {
                 
             match status_progress_int {
                 Ok(1) => {
-                    status_progress = StatusTask::NotStarter;
+                    status_progress = StatusTask::SinIniciar;
                     condition = true;
                 },
                 Ok(2) => {
-                    status_progress = StatusTask::InProgress;
+                    status_progress = StatusTask::EnProgreso;
                     condition = true;
                 },
                 Err(_) => {

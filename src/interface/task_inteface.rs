@@ -1,9 +1,9 @@
 #[derive(Default, Debug)]
 pub enum StatusTask {
     #[default]
-    NotStarter,
-    InProgress,
-    Done,
+    SinIniciar,
+    EnProgreso,
+    Culminado,
 }
 
 #[derive(Default, Debug, Clone)]
